@@ -1,20 +1,9 @@
-require('dotenv').config(); // Load environment variables
-
 const puppeteer = require('puppeteer-core');
-const chromium = require('chrome-aws-lambda');  // This helps Puppeteer work on Heroku
-const fs = require('fs');
-const path = require('path');
-
-// Define variables for login credentials and file paths from environment variables
-const NARRPR_URL = process.env.NARRPR_URL;
-const EMAIL = process.env.EMAIL;
-const PASSWORD = process.env.PASSWORD;
-const DOWNLOAD_PATH = process.env.DOWNLOAD_PATH || '/tmp';  // Make sure to use Heroku's writable path
+const chromium = require('chrome-aws-lambda'); // This helps Puppeteer work on Heroku
 
 // Function to create a delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-// Function to automate the NarrPR process
 async function generateHomeReport(address, name, email, phone) {
     const browser = await puppeteer.launch({
         executablePath: await chromium.executablePath,  // Use chromium executable for Heroku
@@ -28,11 +17,11 @@ async function generateHomeReport(address, name, email, phone) {
 
     try {
         // Step 1: Go to the NarrPR login page
-        await page.goto(NARRPR_URL, { waitUntil: 'networkidle2' });
+        await page.goto(process.env.NARRPR_URL, { waitUntil: 'networkidle2' });
 
         // Step 2: Log in
-        await page.type('#SignInEmail', EMAIL);
-        await page.type('#SignInPassword', PASSWORD);
+        await page.type('#SignInEmail', process.env.EMAIL);
+        await page.type('#SignInPassword', process.env.PASSWORD);
         await page.click('#SignInBtn');
         await page.waitForNavigation();
 
@@ -73,8 +62,8 @@ async function generateHomeReport(address, name, email, phone) {
 I thought you would be interested in this property at ${address}.
 
 Best,
-Jessica Jones
-Realtors Property Resource`);
+Dylan Sievering
+Choice Residential Real Estate`);
         await delay(1500);
 
         // Step 4.4: Input the email address in the email input field
