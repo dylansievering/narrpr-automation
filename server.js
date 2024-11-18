@@ -2,31 +2,35 @@ require('dotenv').config(); // Load environment variables
 
 const express = require('express');
 const bodyParser = require('body-parser');
+const cors = require('cors');  // Import CORS package
 const { generateHomeReport } = require('./GenerateReport'); // Ensure the path is correct
 
 const app = express();
 
-// Middleware to parse URL-encoded bodies (for Google Forms)
+// Use CORS to allow cross-origin requests
+app.use(cors());
+
+// Middleware to parse URL-encoded bodies (for Google Forms or form submissions)
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Middleware to parse JSON bodies (if Zapier or other services send JSON)
+// Alternatively, if you want to accept JSON as well:
 app.use(express.json());
 
-// Webhook endpoint to receive data from the form (Zapier, Google Forms, etc.)
+// Simple GET route for the root URL to prevent the "Cannot GET /" error
+app.get('/', (req, res) => {
+    res.send('Welcome to the Home Report API!');
+});
+
+// Webhook endpoint to receive data from Zapier (or any other service)
 app.post('/webhook', async (req, res) => {
     console.log('Webhook received:', req.body);  // Logs incoming data
 
     // Extract data from the request body
     const { name, email, phone, address } = req.body;
 
-    // Log the data to verify if it's coming correctly
-    console.log('Extracted Data:', { name, email, phone, address });
-
     try {
         // Call the Puppeteer function to generate the report
         await generateHomeReport(address, name, email, phone);
-        
-        // Respond back to the client (Zapier, Google Forms, etc.)
         res.status(200).send('Report generation started');  // Sends a confirmation response
     } catch (error) {
         console.error("Error generating report:", error);
