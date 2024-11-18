@@ -16,15 +16,18 @@ async function generateHomeReport(address, name, email, phone) {
     const page = await browser.newPage();
 
     try {
+        console.log('Navigating to the login page...');
         // Step 1: Go to the NarrPR login page
         await page.goto(process.env.NARRPR_URL, { waitUntil: 'networkidle2' });
 
+        console.log('Logging in...');
         // Step 2: Log in
         await page.type('#SignInEmail', process.env.EMAIL);
         await page.type('#SignInPassword', process.env.PASSWORD);
         await page.click('#SignInBtn');
         await page.waitForNavigation();
 
+        console.log('Searching for address...');
         // Step 3: Input the address and press Enter
         await page.waitForSelector('input[name="searchInputBox"]');
         await page.type('input[name="searchInputBox"]', address);
@@ -32,10 +35,12 @@ async function generateHomeReport(address, name, email, phone) {
         await page.keyboard.press('Enter');
         await delay(3000);
 
+        console.log('Creating report...');
         // Click the "Create Report" button
         await page.waitForSelector('.button.page-tool-btn.is-primary');
         await page.click('.button.page-tool-btn.is-primary');
 
+        console.log('Selecting report options...');
         // Step 4: Check the "Mini Property Report" radio button
         await page.waitForSelector('input[type="radio"][id="mat-radio-28-input"]');
         await page.click('input[type="radio"][id="mat-radio-28-input"]');
@@ -50,6 +55,7 @@ async function generateHomeReport(address, name, email, phone) {
         }
         await delay(1500);
 
+        console.log('Filling report details...');
         // Step 4.2: Input the recipient's name
         await page.waitForSelector('input[aria-label="Recipient Name"]');
         await page.type('input[aria-label="Recipient Name"]', name);
@@ -71,6 +77,7 @@ Choice Residential Real Estate`);
         await page.type('input[formcontrolname="deliveryRecipientEmails"]', email);
         await delay(1500);
 
+        console.log('Running report...');
         // Step 4.5: Click the "Run Report" button
         await page.waitForSelector('input[type="submit"].button.is-primary.run-report');
         await page.click('input[type="submit"].button.is-primary.run-report');
@@ -79,7 +86,7 @@ Choice Residential Real Estate`);
         await delay(5000);
 
     } catch (error) {
-        console.error("An error occurred during the automation process:", error);
+        console.error("An error occurred during the automation process:", error.stack);
     } finally {
         await browser.close();
     }
