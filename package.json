@@ -1,0 +1,21 @@
+
+{
+  "name": "narrpr-automation",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"  // This ensures that the Express server is started
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "express": "^4.21.1",
+    "puppeteer-core": "^23.6.1",  // Use puppeteer-core for Heroku deployment
+    "chrome-aws-lambda": "^10.0.0",  // Necessary for running Puppeteer on Heroku
+    "dotenv": "^10.0.0",
+    "body-parser": "^1.19.0"
+  },
+  "engines": {
+    "node": "14.x"  // Make sure Node.js version is compatible with Heroku's environment
+  },
+  "license": "ISC"
+}
